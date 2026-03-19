@@ -1,36 +1,221 @@
 <!DOCTYPE html>
 <html>
 <head>
+<title>Calculator App</title>
 <style>
-  /* Ensure html and body take up the full page and remove default margins/padding */
-  html, body {
-    margin: 0px;
-    padding: 0px;
-    height: 100%;
-    overflow: hidden; /* Hides scrollbars on the main page */
-  }
+body {
+    margin: 0;
+    background: #111;
+    font-family: monospace;
+}
 
-  /* Style the iframe to cover the entire container (the body in this case) */
-  iframe {
-    display: block;
-    width: 100%;
-    height: 100%;
-    border: none; /* Removes the default iframe border */
-    overflow-y: auto; /* Allows vertical scrolling within the iframe if needed */
-    overflow-x: hidden; /* Hides horizontal scrollbar within the iframe */
-    position: fixed; /* Positions the iframe relative to the browser window */
+.launch-btn {
+    display: none;
+}
+
+.calculator {
+    position: fixed;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
-  }
+    width: 100%;
+    height: 100%;
+    background: #111;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.calculator-inner {
+    width: 340px;
+    background: #222;
+    border-radius: 10px;
+    padding: 15px;
+}
+
+.display {
+    background: #cfd8c5;
+    color: #000;
+    font-size: 1.6rem;
+    padding: 10px;
+    border-radius: 5px;
+    min-height: 60px;
+    margin-bottom: 10px;
+    word-wrap: break-word;
+}
+
+.display small {
+    display: block;
+    font-size: 0.9rem;
+    color: #333;
+}
+
+.buttons {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+}
+
+button {
+    height: 45px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    background: #444;
+    color: white;
+}
+
+button:active {
+    background: #666;
+}
+
+.op { background: #2e7d32; }
+.eq { background: #1565c0; }
+.clear { background: #b71c1c; }
 </style>
 </head>
+
 <body>
 
-<iframe src="https://secure-stream-browser--leocherubino2.replit.app/" title="W3Schools Website">
-  Your browser does not support iframes.
-</iframe>
+<button class="launch-btn" onclick="launchBlob()">Open Secure Workspace</button>
+
+<div class="calculator">
+<div class="calculator-inner">
+
+<div class="display" id="display">
+<small id="history"></small>
+<span id="result">0</span>
+</div>
+
+<div class="buttons">
+<button class="clear" onclick="clearAll()">CLR</button>
+<button onclick="del()">DEL</button>
+<button onclick="press('(')">(</button>
+<button onclick="press(')')">)</button>
+<button class="op" onclick="press('/')">÷</button>
+
+<button onclick="press('7')">7</button>
+<button onclick="press('8')">8</button>
+<button onclick="press('9')">9</button>
+<button class="op" onclick="press('*')">×</button>
+<button onclick="press('%')">%</button>
+
+<button onclick="press('4')">4</button>
+<button onclick="press('5')">5</button>
+<button onclick="press('6')">6</button>
+<button class="op" onclick="press('-')">−</button>
+<button onclick="press('.')">.</button>
+
+<button onclick="press('1')">1</button>
+<button onclick="press('2')">2</button>
+<button onclick="press('3')">3</button>
+<button class="op" onclick="press('+')">+</button>
+<button class="eq" onclick="calculate()">=</button>
+
+<button onclick="press('0')" style="grid-column: span 5;">0</button>
+</div>
+
+</div>
+</div>
+
+<script>
+const targetURL = "https://www.hahagames.com";
+
+function launchBlob() {
+    const blobContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>New Tab</title>
+            <link rel="icon" type="image/png" href="https://www.google.com/favicon.ico">
+            <style>
+                body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #000; font-family: sans-serif; }
+                #splash { 
+                    position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+                    background: #111; color: #555; display: flex; 
+                    justify-content: center; align-items: center; 
+                    z-index: 999; cursor: pointer; text-transform: uppercase; letter-spacing: 2px;
+                }
+                iframe { width: 100vw; height: 100vh; border: none; display: none; }
+            </style>
+        </head>
+        <body>
+            <div id="splash">Click to Initialize Session</div>
+            <iframe id="frame" src="${targetURL}" allow="fullscreen"></iframe>
+
+            <script>
+                const splash = document.getElementById('splash');
+                const frame = document.getElementById('frame');
+
+                splash.addEventListener('click', () => {
+                    splash.style.display = 'none';
+                    frame.style.display = 'block';
+                });
+
+                window.addEventListener('keydown', (e) => {
+                    if (e.key.toLowerCase() === 'f') {
+                        if (!document.fullscreenElement) {
+                            if (frame.requestFullscreen) frame.requestFullscreen();
+                            else if (frame.webkitRequestFullscreen) frame.webkitRequestFullscreen();
+                        } else {
+                            if (document.exitFullscreen) document.exitFullscreen();
+                        }
+                    }
+                });
+
+                window.onbeforeunload = function() {
+                    return "Changes you made may not be saved.";
+                };
+            <\/script>
+        </body>
+        </html>
+    `;
+
+    const blob = new Blob([blobContent], { type: 'text/html' });
+    const blobURL = URL.createObjectURL(blob);
+    window.open(blobURL, '_blank');
+    setTimeout(() => URL.revokeObjectURL(blobURL), 1000);
+}
+
+let input = "";
+
+function update() {
+    document.getElementById("history").innerText = input;
+}
+
+function press(v) {
+    input += v;
+    update();
+}
+
+function clearAll() {
+    input = "";
+    document.getElementById("result").innerText = "0";
+    update();
+}
+
+function del() {
+    input = input.slice(0, -1);
+    update();
+}
+
+function calculate() {
+    try {
+        let result = eval(input);
+
+        if (result === 132) {
+            launchBlob();
+        }
+
+        document.getElementById("result").innerText = result;
+        input = result.toString();
+        update();
+    } catch {
+        document.getElementById("result").innerText = "Error";
+        input = "";
+    }
+}
+</script>
 
 </body>
 </html>
